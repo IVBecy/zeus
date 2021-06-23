@@ -1,15 +1,19 @@
 #include <iostream>
-#include <string>
+#include <cstring>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 using namespace std;
 
+// Variables
+int socketIter = 300;
+const char *getReq = "GET / HTTP 1.1  42069 \r\n";
+
 // Socket
-int socketOps(string target,int port){
+int socketOps(int port){
 	// Creation
 	struct sockaddr_in host;
-	int s,conn;
+	int s,conn,flow;
 	inet_pton(AF_INET,"127.0.0.1",&host.sin_addr);
 	host.sin_family = AF_INET;
 	host.sin_port = htons(port);
@@ -30,11 +34,17 @@ int socketOps(string target,int port){
 	else{
 		cout << "[*] Socket connected to host\n";
 	}
+	
+	// Sending data
+	for(int i = 0; i<socketIter; i++){
+		flow = send (s,getReq,strlen(getReq),0);	
+		cout << "[*] Request sent\n";
+	};
 	return 0;
 };
 
 // MAIN
 int main(){
-	socketOps("kristofhracza.com",8080);
+	socketOps(8080);
 	return 0;
 }
