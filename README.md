@@ -3,8 +3,7 @@
 A simple DoS tool written in c++.
 
 # Usage:
-```./zeus [TARGET_IP] [PORT] 
-```
+```./zeus [TARGET_IP] [PORT] ```
 
 # Tech used:
 - Sockets
