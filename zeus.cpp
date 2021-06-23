@@ -10,11 +10,13 @@ int socketIter = 300;
 const char *getReq = "GET / HTTP 1.1  42069 \r\n";
 
 // Socket
-int socketOps(int port){
+int socketOps(const char *target,int port){
+	// Logging info
+	cout << "Target: " << target << ":" << port << "\n";
 	// Creation
 	struct sockaddr_in host;
 	int s,conn,flow;
-	inet_pton(AF_INET,"127.0.0.1",&host.sin_addr);
+	inet_pton(AF_INET,target,&host.sin_addr);
 	host.sin_family = AF_INET;
 	host.sin_port = htons(port);
 	s = socket(AF_INET, SOCK_STREAM, 0);
@@ -44,7 +46,7 @@ int socketOps(int port){
 };
 
 // MAIN
-int main(){
-	socketOps(8080);
+int main(int argc, char *argv[]){
+	socketOps(argv[1],atoi(argv[2]));
 	return 0;
 }
