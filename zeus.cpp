@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <cstring>
 #include <thread>
 #include <vector>
@@ -22,7 +23,7 @@ $$$$$$$$\\$$$$$$$\ \$$$$$$  |$$$$$$$  |
 \________|\_______| \______/ \_______/ 
 )"""";
 int socketIter = 700;
-const char *getReq = "GET / HTTP 1.1 Mozzila/4.0(compatible; MSIE 6.0; window NT 5.1; SV1) \r\n";
+const char *getReq = "GET / HTTP/1.1 Roku/DVP-9.10 (519.10E04111A) \r\n";
 void usage(){
 	cout << R""""(
 Usage: ./zeus.exe <IP> <port> <protocol (1/2)> <threads (5)>
@@ -97,6 +98,7 @@ int socketOps(const char *target,int port,int prot){
 int main(int argc, char *argv[]){
 	// Check for the presence of values
 	if (!argv[1] || !argv[2] || !argv[3] || !argv[4]){
+		cout << "Not enough arguments were supplied \n";
 		usage();
 	}
 	int threadCount = atoi(argv[4]);
